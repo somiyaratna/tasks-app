@@ -22,13 +22,17 @@ const TaskItem = ({ task, onToggle, onDelete, onEdit }) => {
   return (
     <View style={styles.task}>
       {isEditing ? (
-        <TextInput
-          style={styles.input}
-          value={editedTitle}
-          onChangeText={setEditedTitle}
-          onBlur={handleSave}
-          autoFocus
-        />
+        <View style={styles.row}>
+          <TextInput
+            style={styles.input}
+            value={editedTitle}
+            onChangeText={setEditedTitle}
+            autoFocus
+          />
+          <TouchableOpacity onPress={handleSave}>
+            <Feather name="check" size={20} color={colors.primary} />
+          </TouchableOpacity>
+        </View>
       ) : (
         <View style={styles.row}>
           <TouchableOpacity onPress={() => onToggle(task.id)}>
@@ -44,17 +48,19 @@ const TaskItem = ({ task, onToggle, onDelete, onEdit }) => {
             {task.title}
           </Text>
 
-          <View style={styles.actions}>
-            <TouchableOpacity onPress={() => setIsEditing(true)}>
-              <Feather name="edit-2" size={20} color={colors.primary} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => onDelete(task.id)}
-              style={{ marginLeft: 10 }}
-            >
-              <MaterialIcons name="delete" size={22} color={colors.error} />
-            </TouchableOpacity>
-          </View>
+          {!task.completed && (
+            <View style={styles.actions}>
+              <TouchableOpacity onPress={() => setIsEditing(true)}>
+                <Feather name="edit-2" size={20} color={colors.primary} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => onDelete(task.id)}
+                style={{ marginLeft: 10 }}
+              >
+                <MaterialIcons name="delete" size={24} color={colors.error} />
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       )}
     </View>
@@ -75,6 +81,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
   },
   text: {
     flex: 1,
@@ -94,5 +101,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: colors.primary,
     color: colors.textPrimary,
+    minWidth: "90%",
   },
 });

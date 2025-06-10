@@ -1,5 +1,6 @@
 import React from "react";
 import { View, TextInput, Button, StyleSheet } from "react-native";
+import colors from "../utils/colors";
 
 const TaskInput = ({ task, setTask, onAdd }) => {
   return (
@@ -32,8 +33,8 @@ const styles = StyleSheet.create({
   },
   button: {
     padding: 10,
-    borderRadius: 5,
-    backgroundColor: "#007AFF",
+    borderRadius: 10,
+    backgroundColor: colors.primary,
     alignItems: "center",
   },
 });

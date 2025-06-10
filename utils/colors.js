@@ -7,4 +7,9 @@ export default {
   completedText: "#888888",
   border: "#DDDDDD",
   error: "#FF3B30",
+  priority: {
+    low: "#4CAF50",
+    medium: "#FFC107",
+    high: "#F44336",
+  },
 };
