@@ -6,16 +6,25 @@ import {
   TouchableOpacity,
   TextInput,
 } from "react-native";
+import Button from "./Button";
+import DropDownPicker from "react-native-dropdown-picker";
 import { Feather, MaterialIcons } from "@expo/vector-icons";
 import colors from "../utils/colors";
 
 const TaskItem = ({ task, onToggle, onDelete, onEdit }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(task.title);
+  const [editedPriority, setEditedPriority] = useState(task.priority);
+  const [open, setOpen] = useState(false);
+  const [items, setItems] = useState([
+    { label: "Low", value: "low" },
+    { label: "Medium", value: "medium" },
+    { label: "High", value: "high" },
+  ]);
 
   const handleSave = () => {
     if (editedTitle.trim() === "") return;
-    onEdit(task.id, editedTitle);
+    onEdit(task.id, editedTitle, editedPriority);
     setIsEditing(false);
   };
 
@@ -24,10 +33,27 @@ const TaskItem = ({ task, onToggle, onDelete, onEdit }) => {
       {isEditing ? (
         <View style={styles.row}>
           <TextInput
-            style={styles.input}
+            style={[styles.input]}
             value={editedTitle}
             onChangeText={setEditedTitle}
             autoFocus
+          />
+
+          <DropDownPicker
+            open={open}
+            value={editedPriority}
+            items={items}
+            setOpen={setOpen}
+            setValue={setEditedPriority}
+            setItems={setItems}
+            containerStyle={styles.dropDownContainer}
+            dropDownContainerStyle={styles.dropDownList}
+            style={styles.dropDownPicker}
+            textStyle={{
+              fontSize: 14,
+              color: colors.textSecondary,
+              textTransform: "capitalize",
+            }}
           />
           <TouchableOpacity onPress={handleSave}>
             <Feather name="check" size={20} color={colors.primary} />
@@ -44,9 +70,23 @@ const TaskItem = ({ task, onToggle, onDelete, onEdit }) => {
             />
           </TouchableOpacity>
 
-          <Text style={[styles.text, task.completed && styles.completed]}>
-            {task.title}
-          </Text>
+          <View style={styles.textContainer}>
+            <Text style={[styles.text, task.completed && styles.completed]}>
+              {task.title}
+            </Text>
+            {!task.completed && (
+              <Text
+                style={[
+                  styles.priorityLabel,
+                  {
+                    color: colors.priority[task.priority],
+                  },
+                ]}
+              >
+                {task.priority}
+              </Text>
+            )}
+          </View>
 
           {!task.completed && (
             <View style={styles.actions}>
@@ -83,10 +123,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  text: {
+  textContainer: {
     flex: 1,
-    fontSize: 16,
+  },
+  text: {
+    fontSize: 20,
     color: colors.textPrimary,
+    fontWeight: "bold",
   },
   completed: {
     textDecorationLine: "line-through",
@@ -101,6 +144,25 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: colors.primary,
     color: colors.textPrimary,
-    minWidth: "90%",
+    marginHorizontal: 4,
+    flex: 1,
+  },
+  priorityLabel: {
+    fontSize: 14,
+    marginTop: 2,
+    textTransform: "capitalize",
+  },
+  dropDownContainer: {
+    marginHorizontal: 4,
+    width: "30%",
+  },
+  dropDownList: {
+    width: "100%",
+    borderColor: colors.border,
+  },
+  dropDownPicker: {
+    borderColor: colors.border,
+    flex: 1,
+    zIndex: 100,
   },
 });

@@ -12,40 +12,53 @@ import {
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowList: true,
     shouldPlaySound: true,
     shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
   }),
 });
 
 export default function App() {
-  const [task, setTask] = useState("");
+  const [task, setTask] = useState({
+    id: "",
+    title: "",
+    completed: false,
+    priority: "medium",
+    notificationId: null,
+  });
   const [tasks, setTasks] = useState([]);
-  const [priority, setPriority] = useState("medium");
 
+  // Add task
   const handleAddTask = async () => {
-    if (!task.trim()) return;
+    if (!task.title.trim()) return;
 
     const permissionGranted = await requestNotificationPermission();
+
+    const newId = Date.now().toString();
     let notificationId = null;
 
     if (permissionGranted) {
-      const notif = await scheduleNotification(task, Date.now().toString());
-      notificationId = notif;
+      notificationId = await scheduleNotification(task, newId);
     }
 
     const newTask = {
-      id: Date.now().toString(),
-      title: task,
-      completed: false,
-      priority: "medium",
+      ...task,
+      id: newId,
       notificationId,
     };
 
     setTasks((prev) => [...prev, newTask]);
-    setTask("");
+    setTask({
+      id: "",
+      title: "",
+      completed: false,
+      priority: "medium",
+      notificationId: null,
+    });
   };
 
+  // Toggle task completion
   const toggleTask = (id) => {
     setTasks((prev) =>
       prev.map((t) => {
@@ -60,13 +73,20 @@ export default function App() {
     );
   };
 
-  const editTask = (id, newTitle) => {
+  // Edit task
+  const editTask = (id, title, priority) => {
     setTasks((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, title: newTitle } : t))
+      prev.map((t) => (t.id === id ? { ...t, title, priority } : t))
     );
   };
 
+  // Delete task
   const deleteTask = (id) => {
+    const taskToDelete = tasks.find((t) => t.id === id);
+    if (taskToDelete?.notificationId) {
+      cancelNotification(taskToDelete.notificationId);
+    }
+
     setTasks((prev) => prev.filter((t) => t.id !== id));
   };
 
@@ -74,19 +94,26 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>My Tasks</Text>
       <TaskInput task={task} setTask={setTask} onAdd={handleAddTask} />
-
-      <FlatList
-        data={tasks}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TaskItem
-            task={item}
-            onToggle={toggleTask}
-            onEdit={editTask}
-            onDelete={deleteTask}
+      <View style={styles.tasksContainer}>
+        {tasks.length > 0 ? (
+          <FlatList
+            data={tasks}
+            renderItem={({ item }) => (
+              <TaskItem
+                task={item}
+                onToggle={toggleTask}
+                onDelete={deleteTask}
+                onEdit={editTask}
+              />
+            )}
+            keyExtractor={(item) => item.id}
           />
+        ) : (
+          <Text style={{ color: colors.textPrimary }}>
+            Add a few tasks to get started!
+          </Text>
         )}
-      />
+      </View>
     </SafeAreaView>
   );
 }
@@ -97,11 +124,15 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingHorizontal: 20,
     backgroundColor: colors.background,
+    marginBottom: 60,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
     color: colors.textPrimary,
+  },
+  tasksContainer: {
+    flex: 1,
   },
 });

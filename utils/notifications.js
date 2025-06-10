@@ -2,33 +2,28 @@ import * as Notifications from "expo-notifications";
 
 // Ask for permission (only needed once per install)
 export const requestNotificationPermission = async () => {
-  const settings = await Notifications.getPermissionsAsync();
-  if (!settings.granted) {
-    const result = await Notifications.requestPermissionsAsync();
-    return result.granted;
-  }
-  return true;
+  const { granted } = await Notifications.requestPermissionsAsync();
+  return granted;
 };
 
 // Schedule a local notification
-export const scheduleNotification = async (taskTitle, taskId) => {
-  return await Notifications.scheduleNotificationAsync({
+export const scheduleNotification = async (task, notificationId) => {
+  const notif = await Notifications.scheduleNotificationAsync({
     content: {
-      title: "Task Reminder",
-      body: `Time to complete: ${taskTitle}`,
-      data: { taskId },
+      title: `${task.title} (${task.priority})`,
+      body: `Time to complete ${task.title}`,
+      data: { task },
     },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
       seconds: 10,
     },
+    identifier: notificationId,
   });
+  return notif;
 };
 
-export const cancelNotification = async (notificationId) => {
-  try {
-    await Notifications.cancelScheduledNotificationAsync(notificationId);
-  } catch (error) {
-    console.log("Failed to cancel notification:", error);
-  }
+// Cancel a local notification
+export const cancelNotification = (notificationId) => {
+  Notifications.cancelScheduledNotificationAsync(notificationId);
 };
