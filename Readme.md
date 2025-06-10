@@ -44,5 +44,4 @@ npm install
 ```bash
 npx expo start
 ```
-
-- Then scan the QR code with Expo Go (on Android) or Camera App (on iOS) or run on Android/iOS simulator.
+Then scan the QR code with Expo Go (on Android) or Camera App (on iOS) or run on Android/iOS simulator.
