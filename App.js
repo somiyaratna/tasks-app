@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet, SafeAreaView } from "react-native";
 import * as Notifications from "expo-notifications";
 import TaskInput from "./components/TaskInput";
@@ -9,6 +9,7 @@ import {
   requestNotificationPermission,
   scheduleNotification,
 } from "./utils/notifications";
+import { saveTasksToStorage, loadTasksFromStorage } from "./utils/storage";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -28,6 +29,18 @@ export default function App() {
     notificationId: null,
   });
   const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    const loadTasks = async () => {
+      const savedTasks = await loadTasksFromStorage();
+      setTasks(savedTasks);
+    };
+    loadTasks();
+  }, []);
+
+  useEffect(() => {
+    saveTasksToStorage(tasks);
+  }, [tasks]);
 
   // Add task
   const handleAddTask = async () => {
