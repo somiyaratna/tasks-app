@@ -1,4 +1,5 @@
 # 📋 My Tasks – React Native App
+## by Somiya Ratna Behera
 
 A simple, fast, and beautiful task manager built with **React Native (Expo)**. Easily add, edit, prioritize, and delete tasks — with support for local notifications and persistent storage using AsyncStorage.
 
@@ -45,3 +46,10 @@ npm install
 npx expo start
 ```
 Then scan the QR code with Expo Go (on Android) or Camera App (on iOS) or run on Android/iOS simulator.
+
+### Challenges faced
+- Had a bug, where the notification was invoking immediately even after adding a trigger after 10 sec. Took quite some time and docs lookup to fix.
+- Implementing the dropdown, because react-native does not have a dropdown component included.
+- Adding the ability to change the priority while editing.
+
+All in all, this project was really fun, yet challenging in some aspects to build. Really glad with how it turned out.
